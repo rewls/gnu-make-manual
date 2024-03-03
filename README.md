@@ -20,7 +20,7 @@
 
 ## Contents
 
-- [ ] 1. Overview of `make` - 1
+- [x] [1. Overview of `make`](01-overview-of-make.md) - 1
 
 - [ ] 2. An Introduction to Makefiles - 3
 
