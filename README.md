@@ -22,7 +22,7 @@
 
 - [x] [1. Overview of `make`](01-overview-of-make.md) - 1
 
-- [ ] 2. An Introduction to Makefiles - 3
+- [x] [2. An Introduction to Makefiles](02-an-introduction-to-makefiles.md) - 3
 
 - [ ] 3. Writing Makefiles - 11
 
