@@ -106,7 +106,7 @@ make clean
 
 ## 2.4. Variables Make Makefiles Simpler
 
-- In out example, we had to list all the object files twice in the rule for `edit`.
+- In our example, we had to list all the object files twice in the rule for `edit`.
 
 - *Variables* allow a text string to be defined once and substituted in multiple places later (see Chapter 6 [How to Use Variables]).
 
@@ -214,7 +214,7 @@ clean :
 
 - This prevents `make` from getting confused by an actual file called `clean` and causes it to continue in spite of errors from `rm`.
 
-    - See Section 4.5 [Phony Targets and Section 5.5 Errors in Recipes.
+    - See Section 4.5 [Phony Targets] and Section 5.5 [Errors in Recipes].
 
 - Since `clean` is not a prerequisites of `edit`, in order to make the rule run, we have to type '`make clean`'.
 
