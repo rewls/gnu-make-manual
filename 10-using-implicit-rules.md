@@ -26,8 +26,7 @@
 
 ## 10.2 Catalogue of Built-In Rules
 
-m:w
-i- Here is a catalogue of predefined implicit rules which are always available unless the makefile explicitly overrides or cancels them.
+- Here is a catalogue of predefined implicit rules which are always available unless the makefile explicitly overrides or cancels them.
 
 - This manual only documents the default rules available on POSIX-based operating systems.
 
@@ -68,3 +67,75 @@ i- Here is a catalogue of predefined implicit rules which are always available u
 ## 10.3 Variables Used by Implicit Rules
 
 - You can alter the values of these variables in the makefile, with arguments to `make`, or in the environment to alter how the implicit rules work without redefining the rules themselves.
+
+- *All* implicit rules that do C compilation use '`$(CC)`' to get the program name for the compiler and *all* include '`$(CFLAGS)`' among the arguments given to the compiler.
+
+- The variables used in implicit rules fall into two classes: those that are names of programs and those that contain arguments for the programs.
+
+- If a variable value contains more than one argument, separate them with spaces.
+
+- The following tables describe of some of the more commonly-used predefined variables.
+
+- This list is not exhaustive, and the default values shown here may not be what `make` selects for your environment.
+
+- To see the complete list of predefined variables for your instance of GNU `make` you can run '`make -p`' in a directory with no makefiles.
+
+- Here is a table of some of the more common variables used as names of programs in built-in rules:
+
+	- `AR`: Archive-maintaining program; default '`ar`'.
+
+	- `CC`: Program for compiling C programs; default '`cc`'.
+
+	- `ARFLAGS`: Flags to give the archive-maintaining program; default '`rv`'.
+
+	- `CFLAGS`: Extra flags to give to the C compiler.
+
+	- `CPPFLAGS`: Extra flags to give the C preprocessor and programs that use it.
+
+	- `LDFLAGS`: Extra flags to give to compilers when they are supposed to invoke the linker, '`ld`', such as `-L`.
+
+		- Libraries should be added to the `LDLIBS` variable instead.
+
+	- `LDLIBS`: Library flags or names given to compilers when they are supposed to invoke the linker, `ld`.
+
+		- `LOADLIBES` is a deprecated alternative to `LDLIBS`.
+
+		- Non-library linker flags should go in the `LDFLAGS` variable.
+
+## 10.5 Defining and Redefining Pattern Rules
+
+- You define an implicit rule by writing a *pattern rule*.
+
+- A pattern rule looks like an ordinary rule, except that its target contains the character '`%`'.
+
+- The target is considered a pattern for matching file names; the '`%`' can match any nonempty substring, while other characters match only themselves.
+
+- The prerequisites likewise use '`%`' to show how their names relate to the target name.
+
+- Note that expansion using '`%`' in pattern rules occurs **after** any variable or functin expansions, which take place when the makefile is read.
+
+### 10.5.3 Automatic Variables
+
+- The *automatic variables* have values computed afresh for each rule that is executed, based on the target and prerequisites of the rule.
+
+- It's very important that you recognize the limited scope in which automatic variable values are available: they only have values within the recipe.
+
+- Here is a table of automatic variables:
+
+	- `$@`
+
+		- The file name of the target of the rule.
+
+	- `$<`
+
+		- The name of the first prerequisites.
+
+	- `$?`
+
+		- The names of all the prerequisites that are newer than the target, with spaces between them.
+
+		- If target does not exist, all prerequisites will be included.
+
+	- `$^`
+
+		- The names of all the prerequisites, with spaces between them.
