@@ -102,6 +102,32 @@
 
 		- Non-library linker flags should go in the `LDFLAGS` variable.
 
+## 10.4 Chains of Implicit Rules
+
+- Sometimes a file can be made by a sequence of implicit rules.
+
+- For example, a file `*n*.o` could be made from `*n*.y` by running first Yacc and then `cc`.
+
+- Such a sequence is called a *chain*.
+
+- Even if `n.c` does not exist and is not mentioned, `make` knows how to envision itas the missing link between `*n*.o` and `*n*.y`!
+
+- In this case, `*n*.c` is called an *intermediate file*.
+
+- Intermediate files are remade using their rules just like all other files.
+
+- But intermediate files are treated differently in two ways.
+
+- The first difference is what happens if the intermediate file does not exist.
+
+- If an ordinary file *b* does not exist, and `make` consider a target that depends on *b*, it invariably creates *b* and then updates the target from *b*.
+
+- But if *b* is an intermediate file, then `make` can leave well enough alone: it won't create *b* unless one of its prerequisites is out of date.
+
+- The second difference is that if `make` *does* create *b* in order to update something else, it deletes *b* later on after it is no longer needed.
+
+- A file cannot be intermediate if it is mentioned in the makefile as a target or prerequisite, so one way to avoid the deletion of intermediate files is by adding it as a prerequisite to rules.
+
 ## 10.5 Defining and Redefining Pattern Rules
 
 - You define an implicit rule by writing a *pattern rule*.
