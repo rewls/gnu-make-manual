@@ -32,7 +32,7 @@
 
 - Compiling C programs
 
-	- `*n*.o` is made automatically from `*n*.c` with a recipe of the form '`$(CC) $(CPPFLAGS) $(CFLAGS) -f'.
+	- `*n*.o` is made automatically from `*n*.c` with a recipe of the form '`$(CC) $(CPPFLAGS) $(CFLAGS) -f`'.
 
 - Linking a single object file
 
