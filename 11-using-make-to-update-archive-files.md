@@ -19,7 +19,7 @@
 - For example, this rule says to create a member `hack.o` in archive `foolib` by copying the file `hack.o`:
 
     ```Makefile
-    foolib(hack.o: hack.o
+    foolib(hack.o): hack.o
         ar cr foolib hack.o
     ```
 
