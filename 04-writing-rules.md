@@ -199,3 +199,40 @@ $(OBJDIR):
 - The *directory search* features of `make` facilitate this by searching several directories automatically to find a prerequisite.
 
 - When you redistribute the files among directories, you do not need to change the individual rules, just the search paths.
+
+## 4.5 Phony Targets
+
+- A phony target is one that is not really the name of a file; rather it is just a name for a recipe to be executed when you make an explicit request.
+
+- There are two reasons to use a phony target: to avoid a conflict with a file of the same name, and to improve performance.
+
+- If you write a rule whose recipe will not create the target file, the recipe will be executed every time the target comes up for remaking.
+
+- Here is an example:
+
+	```Makefile
+	clean:
+		rm *.o temp
+	```
+
+- In this example, the `clean` target will not work properly if a file named `clean` is ever created in this directory.
+
+- Since it has no prerequisites, `clean` would always be considered up to date and its recipe would not be executed.
+
+- To avoid this problem you can explicitly declare the target to be phony by making it a prerequisite of the special target `.PHONY` as follows:
+
+	- See Section 4.8 Special Built-in Target Names.
+
+	```Makefile
+	.PHONY: clean
+	clean:
+		rm *.o temp
+```
+
+- Once this is done, '`make clean`' will run the recipe regardless of whether there is a file named `clean`.
+
+- Prerequisites of `.PHONY` are always interpreted as literal target names, never as patterns.
+
+- Phony targets are also useful in conjunction with recursive invocations of `make`
+
+	- See Section 6.7 Recursive Use of `make`.
