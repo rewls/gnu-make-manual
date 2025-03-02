@@ -1,0 +1,55 @@
+= 5 Writing Recipes in Rules
+:toc: left
+:source-highlighter: rouge
+
+* The recipe of a rule consists of one or more shell command lines to be
+  executed, one at a time, in the order they appear.
+* Recipes in makefiles are always interpreted by `/bin/sh` unless the makefile
+  specifies otherwise.
+
+== 5.2 Recipe Echoing
+
+* Normally `make` prints each line of the recipe before it is executed.
+* We call this _echoing_ because it gives the appearance that you are typing
+  the lines yourself.
+
+'''
+
+* When a line starts with \'``@``', the echoing of that line is suppressed.
+* The \'``@``' is discarded before the line is passed to the shell.
+* Typically you would use this for a command whose only effect is to print
+  something, such as an `echo` command to indicate progress through the
+  makefile:
++
+[source,makefile]
+@echo About to make distribution files
+
+'''
+
+* When `make` is given the flag \'``-n``' or \'``--just-print``' it only
+  echoes most recipes, without executing them.
+* See Section 9.8 [Summary of Options].
+* In this case even the recipe lines starting with \'``@``' are printed.
+* This flag is useful for finding out which recipes `make` thinks are necessary
+  without actually doing them.
+
+'''
+
+* The \'``-s``' or \'``--silent``' flag to make prevents all echoing, as if
+  all recipes started with \'``@``'.
+* A rule in the makefile for the special target `.SILENT` without
+  prerequisites has the same effect (see Section 4.8 [Special Built-in Target
+  Names]).
+
+== 5.5 Errors in Recipes
+
+* After each shell invocation returns, `make` looks at its exit status.
+* If the shell completed successfully, the next line in the recipe is executed
+  in a new shell.
+* If there is an error, `make` gives up on the current rule, and perhaps on
+  all rules.
+* Sometimes the failure of a certain recipe does not indicate a problem.
+* To ignore errors in a recipe line, write a \'``-``' at the beginning of the
+  line's text.
+* The \'``-``' is discarded before the line is passed to the shell for
+  execution.
