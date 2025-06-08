@@ -53,3 +53,98 @@
   line's text.
 * The \'``-``' is discarded before the line is passed to the shell for
   execution.
+
+== 5.7 Recursive Use of `make`
+
+* Recursive use of `make` means using `make` as a command in a makefile.
+* This technique is useful when you want separate makefiles for various
+  subsystems that compose a larger system.
+* For example, suppose you have a sub-directory `subdir` which has its own
+  makefile, and you would like the containing directory's makefile to run
+  `make` on the sub-directory.
+* You can do it by writing this:
++
+[source,Makefile]
+subsystem:
+	cd subdir && $(MAKE)
++
+or, equivalently, this (see Section 9.8 [Summary of Options], page 114):
++
+[source,Makefile]
+subsystem:
+	$(MAKE) -C subdir
+
+'''
+
+* You can write recursive `make` commands just by copying this example, but
+  there are many things to know about how they work and why, and about how the
+  sub-`make` relates to the top-level `make`.
+* You may also find it useful to declare targets that invoke recursive make
+  commands as '`.PHONY`' (for more discussion on when this is useful, see
+  Section 4.5 [Phony Targets], page 31).
+
+'''
+
+* For your convenience, when GNU `make` starts (after it has processed any
+  `-C` options) it sets the variable `CURDIR` to the pathname of the current
+  working directory.
+* This value is never touched by `make` again: in particular note that if you
+  include files from other directories the value of `CURDIR` does not change.
+* The value has the same precedence it would have if it were set in the
+  makefile (by default, an environment variable `CURDIR` will not override
+  this value).
+* Note that setting this variable has no impact on the operation of `make` (it
+  does not cause `make` to change its working directory, for example).
+
+=== 5.7.1 How the `MAKE` Variable Works
+
+* Recursive `make` commands should always use the variable `MAKE`, not the
+  explicit command name '`make`', as shown here:
++
+[source,Makefile]
+subsystem:
+	cd subdir && $(MAKE)
+
+'''
+
+* The value of this variable is the file name with which `make` was invoked.
+* If this file name was `/bin/make`, then the recipe executed is '`cd subdir &&
+  /bin/make'`.
+* If you use a special version of `make` to run the top-level makefile, the
+  same special version will be executed for recursive invocations.
+
+'''
+
+* As a special feature, using the variable `MAKE` in the recipe of a rule
+  alters the effects of the '`-t`' ('`--touch`'), '`-n`' ('`--just-print`'),
+  or `'-q'` (`'--question'`) option.
+* Using the `MAKE` variable has the same effect as using a '`+`' character at
+  the beginning of the recipe line.
+* See Section 9.3 [Instead of Executing the Recipes], page 111.
+* This special feature is only enabled if the `MAKE` variable appears directly
+  in the recipe: it does not apply if the `MAKE` variable is referenced
+  through expansion of another variable.
+* In the latter case you must use the '`+`' token to get these special
+  effects.
+
+'''
+
+* Consider the command '`make -t`' in the above example.
+* (The '`-t`' option marks targets as up to date without actually running any
+  recipes; see Section 9.3 [Instead of Execution], page 111.)
+* Following the usual definition of '`-t`', a '`make -t`' command in the
+  example would create a file named `subsystem` and do nothing else.
+* What you really want it to do is run '`cd subdir && make -t`'; but that would
+  require executing the recipe, and '`-t`' says not to execute recipes.
+
+'''
+
+* The special feature makes this do what you want: whenever a recipe line of a
+  rule contains the variable `MAKE`, the flags '`-t`', '`-n`' and '`-q`' do
+  not apply to that line.
+* Recipe lines containing `MAKE` are executed normally despite the presence of
+  a flag that causes most recipes not to be run.
+* The usual `MAKEFLAGS` mechanism passes the flags to the sub-`make` (see
+  Section 5.7.3 [Communicating Options to a Sub-make], page 59), so your
+  request to touch the files, or print the recipes, is propagated to the
+  subsystem.
