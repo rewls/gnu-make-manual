@@ -106,3 +106,82 @@ foo.1 : foo.man sedscript
 
 * Try to make the build and installation targets, at least (and all their
   subtargets) work correctly with a parallel `make`.
+
+== 16.2 Utilities in Makefiles
+
+* Write the Makefile commands (and any shell scripts, such as `configure`) to
+  run under `sh` (both the traditional Bourne shell and the posix shell), not
+  `csh`.
+* Don't use any special features of `ksh` or `bash`, or posix features not
+  widely supported in traditional Bourne `sh`.
+
+'''
+
+* The `configure` script and the Makefile rules for building and installation
+  should not use any utilities directly except these:
+
+....
+awk cat cmp cp diff echo expr false grep install-info ln ls
+mkdir mv printf pwd rm rmdir sed sleep sort tar test touch tr true
+....
+
+* Compression programs such as `gzip` can be used in the `dist` rule.
+
+'''
+
+* Generally, stick to the widely-supported (usually posix-specified) options
+  and features of these programs.
+* For example, don't use \'``mkdir -p``', convenient as it may be, because a
+  few systems don't support it at all and with others, it is not safe for
+  parallel execution.
+* For a list of known incompatibilities, see Section "Portable Shell" in
+  _Autoconf_.
+
+'''
+
+* It is a good idea to avoid creating symbolic links in makefiles, since a few
+  file systems don't support them.
+
+'''
+
+* The Makefile rules for building and installation can also use compilers and
+  related programs, but should do so via `make` variables so that the user can
+  substitute alternatives.
+* Here are some of the programs we mean:
+
+....
+ar bison cc flex install ld ldconfig lex
+make makeinfo ranlib texi2dvi yacc
+....
+
+* Use the following make variables to run those programs:
+
+...
+$(AR) $(BISON) $(CC) $(FLEX) $(INSTALL) $(LD) $(LDCONFIG) $(LEX)
+$(MAKE) $(MAKEINFO) $(RANLIB) $(TEXI2DVI) $(YACC)
+....
+
+* When you use `ranlib` or `ldconfig`, you should make sure nothing bad
+  happens if the system does not have the program in question.
+* Arrange to ignore an error from that command, and print a message before the
+  command to tell the user that failure of this command does not mean a
+  problem.
+* (The Autoconf \'``AC_PROG_RANLIB``' macro can help with this.)
+
+'''
+
+* If you use symbolic links, you should implement a fallback for systems that
+  don't have symbolic links.
+
+'''
+
+* Additional utilities that can be used via Make variables are:
+
+....
+chgrp chmod chown mknod
+....
+
+'''
+
+* It is ok to use other utilities in Makefile portions (or scripts) intended
+  only for particular systems where you know those utilities exist.
