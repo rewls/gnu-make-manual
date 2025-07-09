@@ -106,7 +106,7 @@ ____
 
 * link:09-how-to-run-make.adoc[9. How to Run `make` 109]
 ** [x] 9.1 Arguments to Specify the Makefile 109
-** 9.2 Arguments to Specify the Goals 109
+** [x] 9.2 Arguments to Specify the Goals 109
 ** 9.3 Instead of Executing Recipes 111
 ** 9.4 Avoiding Recompilation of Some Files 112
 ** 9.5 Overriding Variables 113

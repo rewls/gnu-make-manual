@@ -53,3 +53,140 @@
   `GNUmakefile`, `makefile`, and `Makefile`, in that order, and use the first
   of these three which exists or can be made (see Chapter 3 [Writing
   Makefiles], page 11).
+
+== 9.2 Arguments to Specify the Goals
+
+* The goals are the targets that make should strive ultimately to update.
+* Other targets are updated as well if they appear as prerequisites of goals,
+  or prerequisites of prerequisites of goals, etc.
+
+'''
+
+* By default, the goal is the first target in the makefile (not counting
+  targets that start with a period).
+* Therefore, makefiles are usually written so that the first target is for
+  compiling the entire program or programs they describe.
+* If the first rule in the makefile has several targets, only the first target
+  in the rule becomes the default goal, not the whole list.
+* You can manage the selection of the default goal from within your makefile
+  using the `.DEFAULT_GOAL` variable (see Section 6.14 [Other Special
+  Variables], page 80).
+
+'''
+
+* You can also specify a different goal or goals with command line arguments
+  to `make`.
+* Use the name of the goal as an argument.
+* If you specify several goals, `make` processes each of them in turn, in the
+  order you name them.
+
+'''
+
+* Any target in the makefile may be specified as a goal (unless it starts with
+  \'``-`' or contains an \'``=``', in which case it will be parsed as a switch
+  or variable definition, respectively).
+* Even targets not in the makefile may be specified, if `make` can find implicit
+  rules that say how to make them.
+
+'''
+
+* `Make` will set the special variable `MAKECMDGOALS` to the list of goals you
+  specified on the command line.
+* If no goals were given on the command line, this variable is empty.
+* Note that this variable should be used only in special circumstances.
+
+'''
+
+* An example of appropriate use is to avoid including `.d` files during
+  `clean` rules (see Section 4.13 [Automatic Prerequisites], page 42), so
+  `make` won't create them only to immediately remove them again:
+
+[source,makefile]
+----
+sources = foo.c bar.c
+
+ifeq (,$(filter clean,$(MAKECMDGOALS)))
+include $(sources:.c=.d)
+endif
+----
+
+* One use of specifying a goal is if you want to compile only a part of the
+  program, or only one of several programs.
+* Specify as a goal each file that you wish to remake.
+* For example, consider a directory containing several programs, with a
+  makefile that starts like this:
+
+[source,makefile]
+.PHONY: all
+all: size nm ld ar as
+
+* If you are working on the program `size`, you might want to say \'``make
+  size``' so that only the files of that program are recompiled.
+* Another use of specifying a goal is to make files that are not normally
+  made.
+* For example, there may be a file of debugging output, or a version of the
+  program that is compiled specially for testing, which has a rule in the
+  makefile but is not a prerequisite of the default goal.
+
+'''
+
+* Another use of specifying a goal is to run the recipe associated with a
+  phony target (see Section 4.5 [Phony Targets], page 31) or empty target (see
+  Section 4.7 [Empty Target Files to Record Events], page 34).
+* Many makefiles contain a phony target named `clean` which deletes everything
+  except source files.
+* Naturally, this is done only if you request it explicitly with \'``make
+  clean``'.
+* Following is a list of typical phony and empty target names.
+* See Section 16.6 [Standard Targets], page 171, for a detailed list of all
+  the standard target names which GNU software packages use.
+
+'''
+
+`all`::
+* Make all the top-level targets the makefile knows about.
+
+`clean`::
+* Delete all files that are normally created by running `make`.
+
+`mostlyclean`::
+* Like \'``clean``', but may refrain from deleting a few files that people
+  normally don't want to recompile.
+* For example, the \'``mostlyclean``' target for GCC does not delete
+  `libgcc.a`, because recompiling it is rarely necessary and takes a lot
+  of time.
+
+`distclean`
+`realclean`
+`clobber`::
+* Any of these targets might be defined to delete _more_ files than
+  \'``clean``' does.
+* For example, this would delete configuration files or links that you would
+  normally create as preparation for compilation, even if the makefile itself
+  cannot create these files.
+
+`install`::
+* Copy the executable file into a directory that users typically search for
+  commands; copy any auxiliary files that the executable uses into the
+  directories where it will look for them.
+
+`print`::
+* Print listings of the source files that have changed.
+
+`tar`::
+* Create a tar file of the source files.
+
+`shar`::
+* Create a shell archive (shar file) of the source files.
+
+`dist`::
+* Create a distribution file of the source files.
+* This might be a tar file, or a shar file, or a compressed version of one of
+  the above, or even more than one of the above.
+
+`TAGS`::
+* Update a tags table for this program.
+
+`check`::
+`test`::
+* Perform self tests on the program this makefile builds.
