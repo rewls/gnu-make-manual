@@ -1,0 +1,159 @@
+= GNU Make Manual
+:toc:
+
+[quote]
+____
+GNU Make A Program for Directing Recompilation GNU make Version 4.4.1 February
+2023 by Richard M. Stallman, Roland McGrath, Paul D. Smith
+
+[%autowidth]
+|===
+|Publication date	|Print length
+
+|February 2023		|229 pages
+|===
+____
+
+* This file documents the GNU make utility, which determines automatically
+  which pieces of a large program need to be recompiled, and issues the
+  commands to recompile them.
+* This is Edition 0.77, last updated 26 February 2023, of The GNU Make Manual,
+  for GNU make version 4.4.1.
+
+== Table of Contents
+
+* [x] link:01-overview-of-make.md[1. Overview of `make` 1]
+* [x] link:02-an-introduction-to-makefiles.md[2. An Introduction to Makefiles
+  3]
+
+* 3. Writing Makefiles 11
+** 3.1 What Makefiles Contain 11
+** 3.2 What Name to Give Your Makefile 12
+** 3.3 Including Other Makefiles 13
+** 3.4 The Variable MAKEFILES 14
+** 3.5 How Makefiles Are Remade 15
+** 3.6 Overriding Part of Another Makefile 16
+** 3.7 How make Reads a Makefile 17
+** 3.8 How Makefiles Are Parsed 19
+** 3.9 Secondary Expansion 19
+
+* link:04-writing-rules.adoc[4. Writing Rules 23]
+** [x] 4.1 Rule Syntax 23
+** [x] 4.2 Types of Prerequisites 24
+** [x] 4.3 Using Wildcard Characters in File Names 25
+** 4.4 Searching Directories for Prerequisites 27
+** [x] 4.5 Phony Targets 31
+** 4.6 Rules without Recipes or Prerequisites 33
+** [x] 4.7 Empty Target Files to Record Events 34
+** 4.8 Special Built-in Target Names 34
+** 4.9 Multiple Targets in a Rule 37
+** 4.10 Multiple Rules for One Target 39
+** 4.11 Static Pattern Rules 40
+** 4.11.1 Syntax of Static Pattern Rules 40
+** 4.11.2 Static Pattern Rules versus Implicit Rules 41
+** 4.12 Double-Colon Rules 42
+** 4.13 Generating Prerequisites Automatically 42
+
+* link:05-writing-recipes-in-rules.adoc[5. Writing Recipes in Rules 45]
+** 5.1 Recipe Syntax 45
+** [x] 5.2 Recipe Echoing 47
+** 5.3 Recipe Execution 48
+** 5.4 Parallel Execution 51
+** [x] 5.5 Errors in Recipes 54
+** 5.6 Interrupting or Killing make 55
+** 5.7 Recursive Use of make 56
+** 5.8 Defining Canned Recipes 61
+** 5.9 Using Empty Recipes 62
+
+* link:06-how-to-use-variables.md[6. How to Use Variables 65]
+** [x] 6.1 Basics of Variable References 65
+** [x] 6.2 The Two Flavors of Variables 66
+** [x] 6.3 Advanced Features for Reference to Variables 69
+** 6.4 How Variables Get Their Values 72
+** 6.5 Setting Variables 72
+** [x] 6.6 Appending More Text to Variables 74
+** 6.7 The override Directive 75
+** 6.8 Defining Multi-Line Variables 76
+** 6.9 Undefining Variables 77
+** 6.10 Variables from the Environment 77
+** 6.11 Target-specific Variable Values 78
+** 6.12 Pattern-specific Variable Values 79
+** 6.13 Suppressing Inheritance 79
+** 6.14 Other Special Variables 80
+
+* 7. Conditional Parts of Makefiles 85
+** 7.1 Example of a Conditional 85
+** 7.2 Syntax of Conditionals 86
+** 7.3 Conditionals that Test Flags 88
+
+* link:08-functions-for-transforming-text.md[8. Functions for Transforming
+  Text 91]
+** [x] 8.1 Function Call Syntax 91
+** 8.2 Functions for String Substitution and Analysis 92
+** [x] 8.3 Functions for File Names 95
+** 8.4 Functions for Conditionals 97
+** 8.5 The let Function 98
+** 8.6 The foreach Function 99
+** 8.7 The file Function 100
+** 8.8 The call Function 101
+** 8.9 The value Function 102
+** 8.10 The eval Function 103
+** 8.11 The origin Function 104
+** 8.12 The flavor Function 105
+** 8.13 Functions That Control Make 106
+** 8.14 The shell Function 107
+** 8.15 The guile Function 108
+
+* 9. How to Run `make` 109
+** 9.1 Arguments to Specify the Makefile 109
+** 9.2 Arguments to Specify the Goals 109
+** 9.3 Instead of Executing Recipes 111
+** 9.4 Avoiding Recompilation of Some Files 112
+** 9.5 Overriding Variables 113
+** 9.6 Testing the Compilation of a Program 114
+** 9.7 Temporary Files 114
+** 9.8 Summary of Options 114
+
+* link:10-using-implicit-rules.adoc[10. Using Implicit Rules 121]
+** [x] 10.1 Using Implicit Rules 121
+** [x] 10.2 Catalogue of Built-In Rules 122
+** [x] 10.3 Variables Used by Implicit Rules 125
+** [x] 10.4 Chains of Implicit Rules 127
+** [x] 10.5 Defining and Redefining Pattern Rules 129
+** 10.6 Defining Last-Resort Default Rules 135
+** 10.7 Old-Fashioned Suffix Rules 136
+** 10.8 Implicit Rule Search Algorithm 137
+
+* link:11-using-make-to-update-archive-files.md[11. Using `make` to Update
+  Archive Files 139]
+** [x] 11.1 Archive Members as Targets 139
+** [x] 11.2 Implicit Rule for Archive Member Targets 139
+** [x] 11.3 Dangers When Using Archives 140
+** 11.4 Suffix Rules for Archive Files 141
+
+* 12. Extending GNU `make` 143
+** 12.1 GNU Guile Integration 143
+** 12.2 Loading Dynamic Objects 145
+
+* 13. Integrating GNU `make` 153
+** 13.1 Sharing Job Slots with GNU make 153
+** 13.2 Synchronized Terminal Output 155
+
+* 14. Features of GNU `make` 157
+* 15. Incompatibilities and Missing Features 161
+
+* 16 Makefile Conventions 163
+** 16.1 General Conventions for Makefiles 163
+** 16.2 Utilities in Makefiles 164
+** 16.3 Variables for Specifying Commands 165
+** 16.4 DESTDIR: Support for Staged Installs 166
+** 16.5 Variables for Installation Directories 166
+** 16.6 Standard Targets for Users 171
+** 16.7 Install Command Categories 176
+
+* A. Quick Reference 179
+* B. Errors Generated by Make 187
+* C. Complex Makefile Example 191
+* D. GNU Free Documentation License 197
+* Index of Concepts 205
+* Index of Functions, Variables, & Directives 215
