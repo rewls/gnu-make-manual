@@ -1,0 +1,55 @@
+= 9 How to Run make
+
+* A makefile that says how to recompile a program can be used in more than one
+  way.
+* The simplest use is to recompile every file that is out of date.
+* Usually, makefiles are written so that if you run make with no arguments, it
+  does just that.
+
+'''
+
+* But you might want to update only some of the files; you might want to use a
+  different compiler or different compiler options; you might want just to
+  find out which files are out of date without changing them.
+
+'''
+
+* By giving arguments when you run `make`, you can do any of these things and
+  many others.
+
+'''
+
+* The exit status of `make` is always one of three values:
+
+'''
+
+`0`::
+* The exit status is zero if `make` is successful.
+
+`2`::
+* The exit status is two if `make` encounters any errors.
+* It will print messages describing the particular errors.
+
+`1`::
+* The exit status is one if you use the \'``-q``' flag and `make` determines
+  that some target is not already up to date.
+* See Section 9.3 [Instead of Executing Recipes], page 111.
+
+== 9.1 Arguments to Specify the Makefile
+
+* The way to specify the name of the makefile is with the \'``-f``' or
+  \'``--file``' option (\'``--makefile``' also works).
+* For example, \'``-f altmake``' says to use the file `altmake` as the
+  makefile.
+
+'''
+
+* If you use the \'``-f``' flag several times and follow each \'``-f``' with an
+  argument, all the specified files are used jointly as makefiles.
+
+'''
+
+* If you do not use the \'``-f``' or \'``--file``' flag, the default is to try
+  `GNUmakefile`, `makefile`, and `Makefile`, in that order, and use the first
+  of these three which exists or can be made (see Chapter 3 [Writing
+  Makefiles], page 11).
