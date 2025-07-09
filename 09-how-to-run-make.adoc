@@ -190,3 +190,71 @@ all: size nm ld ar as
 `check`::
 `test`::
 * Perform self tests on the program this makefile builds.
+
+== 9.5 Overriding Variables
+
+* An argument that contains \'``=``' specifies the value of a variable:
+  \'``_v_=_x_``' sets the value of the variable _v_ to _x_.
+* If you specify a value in this way, all ordinary assignments of the same
+  variable in the makefile are ignored; we say they have been overridden by
+  the command line argument.
+
+'''
+
+* The most common way to use this facility is to pass extra flags to
+  compilers.
+* For example, in a properly written makefile, the variable `CFLAGS` is
+  included in each recipe that runs the C compiler, so a file `foo.c` would be
+  compiled something like this:
+
+....
+cc -c $(CFLAGS) foo.c
+....
+
+
+'''
+
+* Thus, whatever value you set for `CFLAGS` affects each compilation that
+  occurs.
+* The makefile probably specifies the usual value for `CFLAGS`, like this:
+
+[source,makefile]
+CFLAGS=-g
+
+* Each time you run `make`, you can override this value if you wish.
+* For example, if you say \'``make CFLAGS='-g -O'``', each C compilation will
+  be done with \'``cc -c -g -O``'.
+* (This also illustrates how you can use quoting in the shell to enclose
+  spaces and other special characters in the value of a variable when you
+  override it.)
+
+'''
+
+* The variable `CFLAGS` is only one of many standard variables that exist just
+  so that you can change them this way.
+* See Section 10.3 [Variables Used by Implicit Rules], page 125, for a
+  complete list.
+
+'''
+
+* You can also program the makefile to look at additional variables of your
+  own, giving the user the ability to control other aspects of how the
+  makefile works by changing the variables.
+
+'''
+
+* When you override a variable with a command line argument, you can define
+  either a recursively-expanded variable or a simply-expanded variable.
+* The examples shown above make a recursively-expanded variable; to make a
+  simply-expanded variable, write \'``:=``' or \'``::=``' instead of \'``=``'.
+* But, unless you want to include a variable reference or function call in the
+  value that you specify, it makes no difference which kind of variable you
+  create.
+
+'''
+
+* There is one way that the makefile can change a variable that you have
+  overridden.
+* This is to use the override directive, which is a line that looks like this:
+  \'``override variable = value``' (see Section 6.7 [The override Directive],
+  page 75).
