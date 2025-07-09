@@ -46,7 +46,7 @@ ____
 ** 4.6 Rules without Recipes or Prerequisites 33
 ** [x] 4.7 Empty Target Files to Record Events 34
 ** 4.8 Special Built-in Target Names 34
-** 4.9 Multiple Targets in a Rule 37
+** [x] 4.9 Multiple Targets in a Rule 37
 ** 4.10 Multiple Rules for One Target 39
 ** 4.11 Static Pattern Rules 40
 ** 4.11.1 Syntax of Static Pattern Rules 40
