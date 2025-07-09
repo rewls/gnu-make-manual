@@ -1,0 +1,517 @@
+= 10 Using Implicit Rules
+
+* _Implicit rules_ tell `make` how to use customary techniques so that you do
+  not have to specify them in detail when you want to use them.
+* File names determine which implicit rules are run.
+
+'''
+
+* A chain of implicit rules can apply in sequence.
+* See Section 10.4 [Chains of Implicit Rules].
+
+'''
+
+* The built-in implicit rules use several variables in their recipes so that, by
+  chainging the values of the variables, you can change the way the implicit
+  rule works.
+** See Section 10.3 [Variables Used by Implicit Rules].
+
+'''
+
+* You can define your own implicit rules by writing pattern rules.
+* See Section 10.5 [Defining and Redefining Pattern Rules].
+
+'''
+
+* _Suffix rules_ are a more limited way to define implicit rules.
+* Pattern rules are more general and clearer, but suffix rules are retained for
+  compatibility.
+* See Section 10.7 [Old-Fashioned Suffix Rules].
+
+== 10.1 Using Implicit Rules
+
+* To allow `make` to find a customary method for updating a target file, all you
+  have to do is refrain from specifying recipes yourself.
+* Either write a rule with no recipe, or don't write a rule at all.
+* Then `make` will figure out which kind of source file exists or can be made.
+
+'''
+
+* If an implicit rule is found, it can supply both a recipe and one or more
+  prerequisites.
+* You would want to write a rule for `foo.o` with no recipe if you need to specify
+  additional prerequisites, such as header files, that the implicit rule cannot
+  supply.
+
+'''
+
+* Each implicit rule has a target pattern and prerequisite patterns.
+* There may be many implicit rules with the same target pattern.
+
+'''
+
+* Of course, when you write the makefile, you know which implicit rule you want
+  make to use, and you know it will choose that one because you know which
+  possible prerequisite files are supposed to exist.
+* See Section 10.2 [Catalogue of Built-In Rules] for a catalogue of all the
+  predefined implicit rules.
+
+'''
+
+* Above, we said an implicit rule applies if the required prerequisites “exist
+  or can be made”.
+* A file "can be made" if it is mentioned explicitly in the makefile as a target
+  or a prerequisite, or if an implicit rule can be recursively found for how to
+  make it.
+* When an implicit prerequisite is the result of another implicit rule, we say
+  that chaining is occurring.
+* See Section 10.4 [Chains of Implicit Rules].
+
+'''
+
+* In general, `make` searches for an implicit rule for each target, and for each
+  double-colon rule, that has no recipe.
+* A file that is mentioned only as a prerequisite is considered a target whose
+  rule specifies nothing, so implicit rule search happens for it.
+* See Section 10.8 [Implicit Rule Search Algorithm], for the details of how the
+  search is done.
+
+'''
+
+* Note that explicit prerequisites do not influence implicit rule search.
+
+'''
+
+* If you do not want an implicit rule to be used for a target that has no
+  recipe, you can give that target an empty recipe by writing a semicolon (see
+  Section 5.9 [Defining Empty Recipes]).
+
+== 10.2 Catalogue of Built-In Rules
+
+* Here is a catalogue of predefined implicit rules which are always available
+  unless the makefile explicitly overrides or cancels them.
+
+'''
+
+* This manual only documents the default rules available on POSIX-based
+  operating systems.
+
+'''
+
+Compiling C programs::
+* `_n_.o` is made automatically from `_n_.c` with a recipe of the form \'``$(CC)
+  $(CPPFLAGS) $(CFLAGS) -f``'.
+
+Assembling and preprocessing assembler programs::
+* `_n_.o` is made automatically from `_n_.s` by running the assembler, `as`.
+* The precise recipe is \'``$(AS) $(ASFLAGS)``'.
++
+'''
+* `_n_.s` is made automatically from `_n_.S` by running the C preprocessor,
+  `cpp`.
+* The precise recipe is \'``$(CPP) $(CPPFLAGS)``'.
+
+Linking a single object file::
+* `_n_` is made automatically from `_n_.o` by running the C compiler to link the
+  program.
+* The precise recipe used is \'``$(CC) $(LDFLAGS) _n_.o $(LOADLIBES) $(LDLIBS)``'.
++
+'''
+* This rule does the right thing for a simple program with only one source file.
+* It will also do the right thing if there are multiple object files, one of
+  which has a name matching that of the executable file.
+* Thus,
++
+[source,Makefile]
+x: y.o z.o
++
+when `x.c`, `y.c` and `z.c` all exist will execute:
++
+[source,Makefile]
+cc -c x.c -o x.o
+cc -c y.c -o y.o
+cc -c z.c -o z.o
+cc x.o y.o z.o -o x
+rm -f x.o
+rm -f y.o
+rm -f z.o
+
+* In more complicated cases, such as when there is no object file whose name
+  derives from the executable file name, you must write an explicit recipe for
+  linking.
++
+'''
+* Each kind of file automatically made into \'``.o``' object files will be
+  automatically linked by using the compiler (\'``$(CC)``', \'``$(FC)``' or
+  \'``$(PC)``'; the C compiler \'``$(CC)``' is used to assemble \'``.s``' files)
+  without the \'``-c``' option.
+* This could be done by using the \'``.o``' object files as intermediates, but
+  it is faster to do the compiling and linking in one step, so that's how it's
+  done.
+
+'''
+
+* Every rule that produces an object file uses the variable `OUTPUT_OPTION`.
+* `make` defines this variable either to contain \'``-o $@``', or to be empty,
+  depending on a compile-time option.
+* You need the \'``-o``' option to ensure that the output goes into the right
+  file when the source file is in a different directory, as when using `VPATH`
+  (see Section 4.4 [Directory Search]). 
+
+== 10.3 Variables Used by Implicit Rules
+
+* The recipes in built-in implicit rules make liberal use of certain predefined
+  variables.
+* You can alter the values of these variables in the makefile, with arguments to
+  `make`, or in the environment to alter how the implicit rules work without
+  redefining the rules themselves.
+
+'''
+
+* The variables used in implicit rules fall into two classes: those that are
+  names of programs and those that contain arguments for the programs.
+* If a variable value contains more than one argument, separate them with spaces.
+* (The "name of a program" may also contain some command arguments, but it must
+  start with an actual executable program name.)
+* If a variable value contains more than one argument, separate them with
+  spaces.
+
+'''
+
+* The following tables describe of some of the more commonly-used predefined
+  variables.
+* This list is not exhaustive, and the default values shown here may not be what
+  `make` selects for your environment.
+* To see the complete list of predefined variables for your instance of GNU
+  `make` you can run \'``make -p``' in a directory with no makefiles.
+
+'''
+
+* Here is a table of some of the more common variables used as names of programs
+  in built-in rules:
++
+[%autowidth,cols="h,d"]
+|===
+|`AR`	|Archive-maintaining program; default \'``ar``'.
+|`CC`	|Program for compiling C programs; default \'``cc``'.
+|`CPP`	|
+Program for running the C preprocessor, with results to standard output; default
+\'``$(CC) -E``'.
+|`RM`	|Command to remove a file; default \'``rm -f``'.
+|===
+
+'''
+
+* Here is a table of variables whose values are additional arguments for the
+  programs above.
+* The default values for all of these is the empty string, unless otherwise
+  noted.
++
+[%autowidth,cols="h,a"]
+|===
+|`ARFLAGS`	|Flags to give the archive-maintaining program; default \'``rv``'.
+|`CFLAGS`	|Extra flags to give to the C compiler.
+|`CPPFLAGS`	|
+Extra flags to give the C preprocessor and programs that use it.
+|`LDFLAGS`	|
+* Extra flags to give to compilers when they are supposed to invoke the linker,
+  \'``ld``', such as `-L`.
+* Libraries (`-lfoo`) should be added to the `LDLIBS` variable instead.
+|`LDLIBS`	|
+* Library flags or names given to compilers when they are supposed to invoke the
+  linker, \'``ld``'.
+* `LOADLIBES` is a deprecated alternative to `LDLIBS`.
+* Non-library linker flags should go in the `LDFLAGS` variable.
+|===
+
+== 10.4 Chains of Implicit Rules
+
+* Sometimes a file can be made by a sequence of implicit rules.
+* For example, a file `_n_.o` could be made from `_n_.y` by running first Yacc
+  and then `cc`.
+* Such a sequence is called a _chain_.
+
+'''
+
+* If the file `_n_.c` exists, or is mentioned in the makefile, no special
+  searching is required: `make` finds that the object file can be made by C
+  compilation from `_n_.c`; later on, when considering how to make `_n_.c, the
+  rule for running Yacc is used.
+* Ultimately both `_n_.c` and `_n_.o` are updated.
+
+'''
+
+* However, even if `_n_.c` does not exist and is not mentioned, `make` knows
+  how to envision it as the missing link between `_n_.o` and `_n_.y`!
+* In this case, `_n_.c` is called an _intermediate file_.
+* Once `make` has decided to use the intermediate file, it is entered in the
+  data base as if it had been mentioned in the makefile, along with the
+  implicit rule that says how to create it.
+
+'''
+
+* Intermediate files are remade using their rules just like all other files.
+* But intermediate files are treated differently in two ways.
+
+'''
+
+* The first difference is what happens if the intermediate file does not
+  exist.
+* If an ordinary file _b_ does not exist, and `make` consider a target that
+  depends on _b_, it invariably creates _b_ and then updates the target from
+  _b_.
+* But if _b_ is an intermediate file, then `make` can leave well enough alone:
+  it won't create _b_ unless one of its prerequisites is out of date.
+* This means the target depending on _b_ won't be rebuilt either, unless there
+  is some other reason to update that target: for example the target doesn't
+  exist or a different prerequisite is newer than the target.
+
+'''
+
+* The second difference is that if `make` _does_ create _b_ in order to update
+  something else, it deletes _b_ later on after it is no longer needed.
+* Therefore, an intermediate file which did not exist before `make` also does
+  not exist after `make`.
+* `make` reports the deletion to you by printing a \'``rm``' command showing
+  which file it is deleting.
+
+'''
+
+* You can explicitly mark a file as intermediate by listing it as a
+  prerequisite of the special target `.INTERMEDIATE`.
+* This takes effect even if the file is mentioned explicitly in some other
+  way.
+
+'''
+
+* A file cannot be intermediate if it is mentioned in the makefile as a target
+  or prerequisite, so one way to avoid the deletion of intermediate files is
+  by adding it as a prerequisite to rules.
+* However, doing so can cause `make` to do extra work when searching pattern
+  rules (see Section 10.8 [Implicit Rule Search Algorithm], page 137).
+
+'''
+
+* As an alternative, listing a file as a prerequisite of the special target
+  `.NOTINTERMEDIATE` forces it to not be considered intermediate (just as any
+  other mention of the file will do).
+* Also, listing the target pattern of a pattern rule as a prerequisite of
+  `.NOTINTERMEDIATE` ensures that no targets generated using that pattern rule
+  are considered intermediate.
+
+'''
+
+* You can disable intermediate files completely in your makefile by providing
+  `.NOTINTERMEDIATE` as a target with no prerequisites: in that case it
+  applies to every file in the makefile.
+
+'''
+
+* If you do not want `make` to create a file merely because it does not
+  already exist, but you also do not want make to automatically delete the
+  file, you can mark it as a secondary file.
+* To do this, list it as a prerequisite of the special target `.SECONDARY`.
+* Marking a file as secondary also marks it as intermediate.
+
+'''
+
+* A chain can involve more than two implicit rules.
+* For example, it is possible to make a file `foo` from `RCS/foo.y,v` by
+  running RCS, Yacc and cc.
+* Then both `foo.y` and `foo.c` are intermediate files that are deleted at the
+  end.
+
+'''
+
+* No single implicit rule can appear more than once in a chain.
+* This means that `make` will not even consider such a ridiculous thing as
+  making `foo` from `foo.o.o` by running the linker twice.
+* This constraint has the added benefit of preventing any infinite loop in the
+  search for an implicit rule chain.
+
+'''
+
+* There are some special implicit rules to optimize certain cases that would
+  otherwise be handled by rule chains.
+* For example, making `foo` from `foo.c` could be handled by compiling and
+  linking with separate chained rules, using `foo.o` as an intermediate file.
+* But what actually happens is that a special rule for this case does the
+  compilation and linking with a single `cc` command.
+* The optimized rule is used in preference to the step-by-step chain because
+  it comes earlier in the ordering of rules.
+
+'''
+
+* Finally, for performance reasons `make` will not consider non-terminal
+  match-anything rules (i.e., \'``%:``') when searching for a rule to build a
+  prerequisite of an implicit rule (see Section 10.5.5 [Match-Anything Rules],
+  page 134).
+
+== 10.5 Defining and Redefining Pattern Rules
+
+* You define an implicit rule by writing a _pattern rule_.
+* A pattern rule looks like an ordinary rule, except that its target contains
+  the character \'``%``'.
+* The target is considered a pattern for matching file names; the \'``%``' can
+  match any nonempty substring, while other characters match only themselves.
+* The prerequisites likewise use \'``%``' to show how their names relate to
+  the target name.
+
+'''
+
+* Thus, a pattern rule \'``%.o : %.c``' says how to make any file `_stem_.o`
+  from another file `_stem_.c`.
+
+'''
+
+* Note that expansion using \'``%``' in pattern rules occurs *after* any
+  variable or function expansions, which take place when the makefile is read.
+* See Chapter 6 [How to Use Variables], page 65, and Chapter 8 [Functions for
+  Transforming Text], page 91.
+
+=== 10.5.1 Introduction to Pattern Rules
+
+* A pattern rule contains the character \'``%``' (exactly one of them) in the
+  target; otherwise, it looks exactly like an ordinary rule.
+* The target is a pattern for matching file names; the \'``%``' matches any
+  nonempty substring, while other characters match only themselves.
+
+'''
+
+* For example, \'``%.c``' as a pattern matches any file name that ends in
+  \'``.c``'. \'``s.%.c``' as a pattern matches any file name that starts with
+  \'``s.``', ends in \'``.c``' and is at least five characters long.
+* (There must be at least one character to match the \'``%``'.)
+* The substring that the \'``%``' matches is called the _stem_.
+
+'''
+
+* \'``%``' in a prerequisite of a pattern rule stands for the same stem that
+  was matched by the \'``%``' in the target.
+* In order for the pattern rule to apply, its target pattern must match the
+  file name under consideration and all of its prerequisites (after pattern
+  substitution) must name files that exist or can be made.
+* These files become prerequisites of the target.
+
+'''
+
+* Thus, a rule of the form
++
+[source,makefile,subs="quotes"]
+%.o : %.c ; _recipe_...
++
+specifies how to make a file `_n_.o`, with another file `_n_.c` as its
+prerequisite, provided that `_n_.c` exists or can be made.
+
+'''
+
+* There may also be prerequisites that do not use \'``%``'; such a
+  prerequisite attaches to every file made by this pattern rule.
+* These unvarying prerequisites are useful occasionally.
+
+''''
+
+* A pattern rule need not have any prerequisites that contain ‘%’, or in fact any prerequisites at all.
+* Such a rule is effectively a general wildcard.
+* It provides a way to make any file that matches the target pattern.
+* See Section 10.6 [Last Resort], page 135.
+
+'''
+
+* More than one pattern rule may match a target.
+* In this case make will choose the “best fit” rule.
+* See Section 10.5.4 [How Patterns Match], page 133.
+
+'''
+
+* Pattern rules may have more than one target; however, every target must
+  contain a `%` character.
+* Multiple target patterns in pattern rules are always treated as grouped
+  targets (see Section 4.9 [Multiple Targets in a Rule], page 37) regardless
+  of whether they use the `:` or `&:` separator.
+
+'''
+
+* There is one exception: if a pattern target is out of date or does not exist
+  and the makefile does not need to build it, then it will not cause the other
+  targets to be considered out of date.
+* Note that this historical exception will be removed in future versions of
+  GNU `make` and should not be relied on.
+* If this situation is detected `make` will generate a warning _pattern recipe
+  did not update peer target_; however, `make` cannot detect all such
+  situations.
+* Please be sure that your recipe updates _all_ the target patterns when it
+  runs.
+
+=== 10.5.3 Automatic Variables
+
+* Suppose you are writing a pattern rule to compile a \'``.c``' file into a
+  \'``.o``' file: how do you write the \'``cc``' command so that it operates
+  on the right source file name?
+* You cannot write the name in the recipe, because the name is different each
+  time the implicit rule is applied.
+
+'''
+
+* What you do is use a special feature of `make`, the _automatic variables_.
+* These variables have values computed afresh for each rule that is executed,
+  based on the target and prerequisites of the rule.
+* In this example, you would use \'``$@``' for the object file name and
+  \'``$<``' for the source file name.
+
+'''
+
+* It's very important that you recognize the limited scope in which automatic
+  variable values are available: they only have values within the recipe.
+* In particular, you cannot use them anywhere within the target list of a
+  rule; they have no value there and will expand to the empty string.
+* Also, they cannot be accessed directly within the prerequisite list of a
+  rule.
+* A common mistake is attempting to use `$@` within the prerequisites list;
+  this will not work.
+* However, there is a special feature of GNU make, secondary expansion (see
+  Section 3.9 [Secondary Expansion], page 19), which will allow automatic
+  variable values to be used in prerequisite lists.
+
+'''
+
+* Here is a table of automatic variables:
+
+'''
+
+`$@`::
+* The file name of the target of the rule.
+* If the target is an archive member, then \'``$@``' is the name of the
+  archive file.
+* In a pattern rule that has multiple targets (see Section 10.5.1
+  [Introduction to Pattern Rules], page 129), \'``$@``' is the name of
+  whichever target caused the rule's recipe to be run.
+
+`$?`::
+* The names of all the prerequisites that are newer than the target, with
+  spaces between them.
+* If the target does not exist, all prerequisites will be included.
+* For prerequisites which are archive members, only the named member is used
+  (see Chapter 11 [Archives], page 139).
++
+'''
+* \'``$?`` is useful even in explicit rules when you wish to operate on only
+  the prerequisites that have changed.
+* For example, suppose that an archive named `lib` is supposed to contain
+  copies of several object files.
+* This rule copies just the changed object files into the archive:
++
+[source,makefile]
+lib: foo.o bar.o lose.o win.o
+	ar r lib $?
+
+`$^`::
+* The names of all the prerequisites, with spaces between them.
+* For prerequisites which are archive members, only the named member is used
+  (see Chapter 11 [Archives], page 139).
+* A target has only one prerequisite on each other file it depends on, no
+  matter how many times each file is listed as a prerequisite.
+* So if you list a prerequisite more than once for a target, the value of `$^`
+  contains just one copy of the name.
+* This list does not contain any of the order-only prerequisites; for those
+  see the \'``$|``' variable, below.
