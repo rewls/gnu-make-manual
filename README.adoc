@@ -142,8 +142,8 @@ ____
 * 14. Features of GNU `make` 157
 * 15. Incompatibilities and Missing Features 161
 
-* 16 Makefile Conventions 163
-** 16.1 General Conventions for Makefiles 163
+* link:16-makefile-conventions.adoc[16 Makefile Conventions 163]
+** [x] 16.1 General Conventions for Makefiles 163
 ** 16.2 Utilities in Makefiles 164
 ** 16.3 Variables for Specifying Commands 165
 ** 16.4 DESTDIR: Support for Staged Installs 166
