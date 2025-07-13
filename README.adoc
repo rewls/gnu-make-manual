@@ -52,7 +52,7 @@ ____
 ** 4.11.1 Syntax of Static Pattern Rules 40
 ** 4.11.2 Static Pattern Rules versus Implicit Rules 41
 ** 4.12 Double-Colon Rules 42
-** 4.13 Generating Prerequisites Automatically 42
+** [x] 4.13 Generating Prerequisites Automatically 42
 
 * link:05-writing-recipes-in-rules.adoc[5. Writing Recipes in Rules 45]
 ** 5.1 Recipe Syntax 45
