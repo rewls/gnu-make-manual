@@ -599,6 +599,25 @@ endef
   66), though both are used together in complex ways when doing makefile
   programming.
 
+== 6.4 How Variables Get Their Values
+
+* Variables can get values in several different ways:
+** You can specify an overriding value when you run `make`. +
+   See Section 9.5 [Overriding Variables], page 113.
+** You can specify a value in the makefile, either with an assignment (see
+   Section 6.5 [Setting Variables], page 72) or with a verbatim definition
+   (see Section 6.8 [Defining Multi-Line Variables], page 76).
+** You can specify a short-lived value with the `let` function (see Section
+   8.5 [Let Function], page 98) or with the `foreach` function (see Section
+   8.6 [Foreach Function], page 99).
+** Variables in the environment become `make` variables. +
+   See Section 6.10 [Variables from the Environment], page 77.
+** Several _automatic_ variables are given new values for each rule. +
+   Each of these has a single conventional use. +
+   See Section 10.5.3 [Automatic Variables], page 130.
+** Several variables have constant initial values. +
+   See Section 10.3 [Variables Used by Implicit Rules], page 125.
+
 == 6.6 Appending More Text to Variables
 
 * Often it is useful to add more text to the value of a variable already
