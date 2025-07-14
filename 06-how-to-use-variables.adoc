@@ -618,6 +618,105 @@ endef
 ** Several variables have constant initial values. +
    See Section 10.3 [Variables Used by Implicit Rules], page 125.
 
+== 6.5 Setting Variables
+
+* To set a variable from the makefile, write a line starting with the variable
+  name followed by one of the assignment operators '```=```', '```:=```',
+  '```::=```', or '```:::=```'.
+* Whatever follows the operator and any initial whitespace on the line becomes
+  the value.
+* For example,
++
+[source,makefile]
+objects = main.o foo.o bar.o utils.o
++
+defines a variable named `objects` to contain the value '```main.o foo.o bar.o
+utils.o```'.
+* Whitespace around the variable name and immediately after the '```=```' is
+  ignored.
+
+'''
+
+* Variables defined with '```=```' are _recursively expanded_ variables.
+* Variables defined with '```:=```' or '```::=```' are _simply expanded_
+  variables; these definitions can contain variable references which will be
+  expanded before the definition is made.
+* Variables defined with '```:::=```' are _immediately expanded_ variables.
+* The different assignment operators are described in See Section 6.2 [The Two
+  Flavors of Variables], page 66.
+
+'''
+
+* The variable name may contain function and variable references, which are
+  expanded when the line is read to find the actual variable name to use.
+
+'''
+
+* There is no limit on the length of the value of a variable except the amount
+  of memory on the computer.
+* You can split the value of a variable into multiple physical lines for
+  readability (see Section 3.1.1 [Splitting Long Lines], page 12).
+
+'''
+
+* Most variable names are considered to have the empty string as a value if
+  you have never set them.
+* Several variables have built-in initial values that are not empty, but you
+  can set them in the usual ways (see Section 10.3 [Variables Used by Implicit
+  Rules], page 125).
+* Several special variables are set automatically to a new value for each
+  rule; these are called the automatic variables (see Section 10.5.3
+  [Automatic Variables], page 130).
+
+'''
+
+* If you'd like a variable to be set to a value only if it's not already set,
+  then you can use the shorthand operator '```?=```' instead of '```=```'.
+* These two settings of the variable '```FOO```' are identical (see Section
+  8.11 [The `origin` Function], page 104):
++
+[source,makefile]
+FOO ?= bar
++
+and
++
+[source,makefile]
+ifeq ($(origin FOO), undefined)
+FOO = bar
+endif
+
+'''
+
+* The shell assignment operator '```!=```' can be used to execute a shell
+  script and set a variable to its output.
+* This operator first evaluates the right-hand side, then passes that result
+  to the shell for execution.
+* If the result of the execution ends in a newline, that one newline is
+  removed; all other newlines are replaced by spaces.
+* The resulting string is then placed into the named recursively-expanded
+  variable.
+* For example:
+
+[source,makefile]
+hash != printf '\043'
+file_list != find . -name '*.c'
+
+* If the result of the execution could produce a `$`, and you don't intend
+  what follows that to be interpreted as a `make` variable or function
+  reference, then you must replace every `$` with `$$` as part of the
+  execution.
+* Alternatively, you can set a simply expanded variable to the result of
+  running a program using the `shell` function call.
+* See Section 8.14 [The `shell` Function], page 107.
+* For example:
+
+[source,makefile]
+hash := $(shell printf '\043')
+var := $(shell find . -name "*.c")
+
+* As with the `shell` function, the exit status of the just-invoked shell
+  script is stored in the `.SHELLSTATUS` variable.
+
 == 6.6 Appending More Text to Variables
 
 * Often it is useful to add more text to the value of a variable already

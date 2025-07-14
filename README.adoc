@@ -70,7 +70,7 @@ ____
 ** [x] 6.2 The Two Flavors of Variables 66
 ** [x] 6.3 Advanced Features for Reference to Variables 69
 ** [x] 6.4 How Variables Get Their Values 72
-** 6.5 Setting Variables 72
+** [x] 6.5 Setting Variables 72
 ** [x] 6.6 Appending More Text to Variables 74
 ** 6.7 The override Directive 75
 ** 6.8 Defining Multi-Line Variables 76
