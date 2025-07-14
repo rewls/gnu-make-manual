@@ -61,7 +61,7 @@ ____
 ** 5.4 Parallel Execution 51
 ** [x] 5.5 Errors in Recipes 54
 ** 5.6 Interrupting or Killing make 55
-** 5.7 Recursive Use of make 56
+** [x] 5.7 Recursive Use of make 56
 ** 5.8 Defining Canned Recipes 61
 ** 5.9 Using Empty Recipes 62
 
