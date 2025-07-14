@@ -31,7 +31,7 @@ ____
 ** 3.2 What Name to Give Your Makefile 12
 ** [x] 3.3 Including Other Makefiles 13
 ** 3.4 The Variable MAKEFILES 14
-** 3.5 How Makefiles Are Remade 15
+** [x] 3.5 How Makefiles Are Remade 15
 ** 3.6 Overriding Part of Another Makefile 16
 ** 3.7 How make Reads a Makefile 17
 ** 3.8 How Makefiles Are Parsed 19

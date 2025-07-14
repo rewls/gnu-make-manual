@@ -249,3 +249,92 @@ include foo a.mk b.mk c.mk bish bash
   _filenames_) do not exist or cannot be remade.
 * For compatibility with some other `make` implementations, `sinclude` is
   another name for `-include`.
+
+== 3.5 How Makefiles Are Remade
+
+* Sometimes makefiles can be remade from other files, such as RCS or SCCS
+  files.
+* If a makefile can be remade from other files, you probably want `make` to
+  get an up-to-date version of the makefile to read in.
+
+'''
+
+* To this end, after reading in all makefiles `make` will consider each as a
+  goal target, in the order in which they were processed, and attempt to
+  update it.
+* If parallel builds (see Section 5.4 [Parallel Execution], page 51) are
+  enabled then makefiles will be rebuilt in parallel as well.
+
+'''
+
+* If a makefile has a rule which says how to update it (found either in that
+  very makefile or in another one) or if an implicit rule applies to it (see
+  Chapter 10 [Using Implicit Rules], page 121), it will be updated if
+  necessary.
+* After all makefiles have been checked, if any have actually been changed,
+  `make` starts with a clean slate and reads all the makefiles over again.
+* (It will also attempt to update each of them over again, but normally this
+  will not change them again, since they are already up to date.)
+* Each restart will cause the special variable `MAKE_RESTARTS` to be updated
+  (see Section 6.14 [Special Variables], page 80).
+
+'''
+
+* If you know that one or more of your makefiles cannot be remade and you want
+  to keep `make` from performing an implicit rule search on them, perhaps for
+  efficiency reasons, you can use any normal method of preventing implicit
+  rule look-up to do so.
+* For example, you can write an explicit rule with the makefile as the target,
+  and an empty recipe (see Section 5.9 [Using Empty Recipes], page 62).
+
+'''
+
+* If the makefiles specify a double-colon rule to remake a file with a recipe
+  but no prerequisites, that file will always be remade (see Section 4.12
+  [Double-Colon], page 42).
+* In the case of makefiles, a makefile that has a double-colon rule with a
+  recipe but no prerequisites will be remade every time `make` is run, and
+  then again after `make` starts over and reads the makefiles in again.
+* This would cause an infinite loop: `make` would constantly remake the
+  makefile and restart, and never do anything else.
+* So, to avoid this, `make` will not attempt to remake makefiles which are
+  specified as targets of a double-colon rule with a recipe but no
+  prerequisites.
+
+'''
+
+* Phony targets (see Section 4.5 [Phony Targets], page 31) have the same
+  effect: they are never considered up-to-date and so an included file marked
+  as phony would cause `make` to restart continuously.
+* To avoid this `make` will not attempt to remake makefiles which are marked
+  phony.
+* You can take advantage of this to optimize startup time: if you know you
+  don't need your `Makefile` to be remade you can prevent `make` from trying
+  to remake it by adding either:
++
+[source,makefile]
+.PHONY: Makefile
++
+or:
++
+[source,makefile]
+Makefile:: ;
+
+'''
+
+* If you do not specify any makefiles to be read with '```-f```' or
+  '```--file```' options, `make` will try the default makefile names; see
+  Section 3.2 [What Name to Give Your Makefile], page 12.
+* Unlike makefiles explicitly requested with '```-f```' or '```--file```'
+  options, `make` is not certain that these makefiles should exist.
+* However, if a default makefile does not exist but can be created by running
+  `make` rules, you probably want the rules to be run so that the makefile can
+  be used.
+
+'''
+
+* Therefore, if none of the default makefiles exists, make will try to make
+  each of them until it succeeds in making one, or it runs out of names to
+  try.
+* Note that it is not an error if make cannot find or make any makefile; a
+  makefile is not always necessary.
