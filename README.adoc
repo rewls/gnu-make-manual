@@ -29,7 +29,7 @@ ____
 * link:03-writing-makefiles.adoc[3. Writing Makefiles 11]
 ** [x] 3.1 What Makefiles Contain 11
 ** 3.2 What Name to Give Your Makefile 12
-** 3.3 Including Other Makefiles 13
+** [x] 3.3 Including Other Makefiles 13
 ** 3.4 The Variable MAKEFILES 14
 ** 3.5 How Makefiles Are Remade 15
 ** 3.6 Overriding Part of Another Makefile 16
