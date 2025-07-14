@@ -26,8 +26,8 @@ ____
 * [x] link:02-an-introduction-to-makefiles.md[2. An Introduction to Makefiles
   3]
 
-* 3. Writing Makefiles 11
-** 3.1 What Makefiles Contain 11
+* link:03-writing-makefiles.adoc[3. Writing Makefiles 11]
+** [x] 3.1 What Makefiles Contain 11
 ** 3.2 What Name to Give Your Makefile 12
 ** 3.3 Including Other Makefiles 13
 ** 3.4 The Variable MAKEFILES 14
