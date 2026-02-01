@@ -115,3 +115,43 @@ which has the effect of copying the file `dir/file.o` into a member named
 `file.o`.
 * In connection with such usage, the automatic variables `%D` and `%F` may be
   useful.
+
+== 11.3 Dangers When Using Archives
+
+* The built-in rules for updating archives are incompatible with parallel
+  builds.
+* These rules (required by the POSIX standard) add each object file into the
+  archive as it's compiled.
+* When parallel builds are enabled this allows multiple `ar` commands to be
+  updating the same archive simultaneously, which is not supported.
+
+'''
+
+* If you want to use parallel builds with archives you can override the
+  default rules by adding these lines to your makefile:
+
+[,makefile]
+----
+(%) : % ;
+%.a : ; $(AR) $(ARFLAGS) $@ $?
+----
+
+'''
+
+* The first line changes the rule that updates an individual object in the
+  archive to do nothing, and the second line changes the default rule for
+  building an archive to update all the outdated objects (`$?`) in one
+  command.
+* Of course you will still need to declare the prerequisites of your library
+  using the archive syntax:
+
+[source,makefile]
+libfoo.a: libfoo.a(x.o y.o ...)
+
+* If you prefer to write an explicit rule you can use:
+
+[,makefile]
+----
+libfoo.a: libfoo.a(x.o y.o ...)
+	$(AR) $(ARFLAGS) $@ $?
+----
