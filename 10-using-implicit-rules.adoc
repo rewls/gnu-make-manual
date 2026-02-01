@@ -487,6 +487,13 @@ prerequisite, provided that `_n_.c` exists or can be made.
   [Introduction to Pattern Rules], page 129), \'``$@``' is the name of
   whichever target caused the rule's recipe to be run.
 
+`$%`::
+* The target member name, when the target is an archive member.
+* See Chapter 11 [Archives], page 139.
+* For example, if the target is `foo.a(bar.o)` then `$%` is `bar.o` and `$@`
+  is `foo.a`.
+* `$%` is empty when the target is not an archive member.
+
 `$?`::
 * The names of all the prerequisites that are newer than the target, with
   spaces between them.
@@ -515,3 +522,28 @@ lib: foo.o bar.o lose.o win.o
   contains just one copy of the name.
 * This list does not contain any of the order-only prerequisites; for those
   see the \'``$|``' variable, below.
+
+'''
+
+* Of the variables listed above, four have values that are single file names,
+  and three have values that are lists of file names.
+* These seven have variants that get just the file's directory name or just
+  the file name within the directory.
+* The variant variables' names are formed by appending `D` or `F`,
+  respectively.
+* The functions `dir` and `notdir` can be used to obtain a similar effect (see
+  Section 8.3 [Functions for File Names], page 95).
+* Note, however, that the `D` variants all omit the trailing slash which
+  always appears in the output of the `dir` function.
+* Here is a table of the variants:
+
+'''
+
+`$(%D)`::
+`$(%F)`::
+* The directory part and the file-within-directory part of the target archive
+  member name.
+* This makes sense only for archive member targets of the form
+  `_archive_(_member_)` and is useful only when member may contain a directory
+  name.
+* (See Section 11.1 [Archive Members as Targets], page 139.)

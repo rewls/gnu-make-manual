@@ -58,3 +58,60 @@ foolib(hack.o) foolib(kludge.o)
 * See Section 4.3 [Using Wildcard Characters in File Names], page 25.
 * For example, `foolib(*.o)` expands to all existing members of the `foolib`
   archive whose names end in `.o`; perhaps `foolib(hack.o) foolib(kludge.o)`.
+
+== 11.2 Implicit Rule for Archive Member Targets
+
+* Recall that a target that looks like `_a_(_m_)` stands for the member named
+  _m_ in the archive file _a_.
+
+'''
+
+* When `make` looks for an implicit rule for such a target, as a special
+  feature it considers implicit rules that match `(_m_)`, as well as those
+  that match the actual target `_a_(_m_)`.
+
+'''
+
+* This causes one special rule whose target is (`%`) to match.
+* This rule updates the target `_a_(_m_)` by copying the file _m_ into the
+  archive.
+* For example, it will update the archive member target `foo.a(bar.o)` by
+  copying the file `bar.o` into the archive `foo.a` as a member named `bar.o`.
+
+'''
+
+* When this rule is chained with others, the result is very powerful.
+* Thus, `make "foo.a(bar.o)"` (the quotes are needed to protect the `(` and
+  `)` from being interpreted specially by the shell) in the presence of a file
+  `bar.c` is enough to cause the following recipe to be run, even without a
+  makefile:
+
+....
+cc -c bar.c -o bar.o
+ar r foo.a bar.o
+rm -f bar.o
+....
+
+* Here `make` has envisioned the file `bar.o` as an intermediate file.
+* See Section 10.4 [Chains of Implicit Rules], page 127.
+
+'''
+
+* Implicit rules such as this one are written using the automatic variable
+  `$%`. See Section 10.5.3 [Automatic Variables], page 130.
+
+'''
+
+* An archive member name in an archive cannot contain a directory name, but it
+  may be useful in a makefile to pretend that it does.
+* If you write an archive member target `foo.a(dir/file.o)`, make will perform
+  automatic updating with this recipe:
++
+....
+ar r foo.a dir/file.o
+....
++
+which has the effect of copying the file `dir/file.o` into a member named
+`file.o`.
+* In connection with such usage, the automatic variables `%D` and `%F` may be
+  useful.
