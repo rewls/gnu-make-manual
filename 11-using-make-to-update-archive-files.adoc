@@ -1,0 +1,60 @@
+= 11 Using make to Update Archive Files
+:source-highlighter: rouge
+:toc: left
+
+* _Archive files_ are files containing named sub-files called _members_; they
+  are maintained with the program `ar` and their main use is as subroutine
+  libraries for linking.
+
+== 11.1 Archive Members as Targets
+
+* An individual member of an archive file can be used as a target or
+  prerequisite in `make`.
+* You specify the member named _member_ in archive file _archive_ as follows:
+
+[source,makefile,subs="+quotes"]
+_archive_(_member_)
+
+* This construct is available only in targets and prerequisites, not in
+  recipes!
+* Most programs that you might use in recipes do not support this syntax and
+  cannot act directly on archive members.
+* Only `ar` and other programs specifically designed to operate on archives
+  can do so.
+* Therefore, valid recipes to update an archive member target probably must
+  use `ar`.
+* For example, this rule says to create a member `hack.o` in archive `foolib`
+  by copying the file `hack.o`:
+
+[,makefile]
+----
+foolib(hack.o) : hack.o
+	ar cr foolib hack.o
+----
+
+* In fact, nearly all archive member targets are updated in just this way and
+  there is an implicit rule to do it for you.
+* Please note: The 'c' flag to `ar` is required if the archive file does not
+  already exist.
+
+'''
+
+* To specify several members in the same archive, you can write all the member
+  names together between the parentheses.
+* For example:
++
+[source,makefile]
+foolib(hack.o kludge.o)
++
+is equivalent to:
++
+[source,makefile]
+foolib(hack.o) foolib(kludge.o)
+
+
+'''
+
+* You can also use shell-style wildcards in an archive member reference.
+* See Section 4.3 [Using Wildcard Characters in File Names], page 25.
+* For example, `foolib(*.o)` expands to all existing members of the `foolib`
+  archive whose names end in `.o`; perhaps `foolib(hack.o) foolib(kludge.o)`.
